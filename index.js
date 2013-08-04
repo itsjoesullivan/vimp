@@ -9,7 +9,16 @@ var Vimp = function(el, opts) {
 
 	/* Instantiate vim */
 	this.vim  = vim;
-	vim.edit({ el: el });
+	vim.edit({ 
+		el: el ,
+		listen: false
+	});
+
+
+	/* Listen */
+	key('space', function() {
+		this.step();
+	}.bind(this));
 };
 
 Vimp.prototype = {};
@@ -18,13 +27,13 @@ Vimp.prototype = {};
  */
 Vimp.prototype.step = function(step) {
 	if(_(step).isArray() || typeof step === 'string') {
-		return this.addStep.apply(arguments);
+		return this.addStep.apply(this,arguments);
 	} else {
 		// Is an option
 		var opts = step;
 		var step = this.getStep(opts);
 		// TODO: where do we record current step?
-		this.exec.apply(step);
+		this.exec.apply(this,step);
 	}
 
 };
@@ -43,16 +52,18 @@ Vimp.prototype.addStep = function(commands,opts) {
  *
  */
 Vimp.prototype.getStep = function(options) {
-	return _(this.steps).at(this.index);
+	return this.steps[this.index];
 };
 
 Vimp.prototype.exec = function(commands, opts) {
+	opts = opts || {};
 	if(opts.backwards) {
 		var snapshot = this.snapshots(this.index);
 		this.vim.text(snapshot);
 	} else {
 		// Base case
 		this.vim.exec(commands);
+		this.index++;
 	}
 };
 
