@@ -1,0 +1,37 @@
+<!doctype html>
+<html>
+<head>
+	<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+</body>
+<pre class="code" id="code">
+// Helper log function
+log = function(text) {
+	if(window.env && env === 'dev') console.log(text);
+}</pre>
+
+<div class="commentary">
+	<ul>
+		<li>Something</li>
+	</ul>
+
+</div>
+
+
+<script src="lib/vim.min.js"></script>
+<script src="lib/underscore.js"></script>
+<script src="lib/keymaster.js"></script>
+<script src="index.js"></script>
+<script>
+	var el = document.getElementById('code');
+	var vimp = new Vimp(el);
+	vimp.step('2/(text\n');
+	vimp.step('d$');
+	vimp.step('i');
+	vimp.step(' .appfy');
+
+</script>
+
+

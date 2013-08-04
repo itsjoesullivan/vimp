@@ -13,13 +13,19 @@ var Vimp = function(el, opts) {
 		el: el ,
 		listen: false
 	});
+	vim.exec('gg');
 
 
 	/* Listen */
-	key('space', function() {
+	key('right', function() {
 		this.step();
 	}.bind(this));
+
+	key('left', function() {
+		this.step({backwards: 1});
+	}.bind(this));
 };
+
 
 Vimp.prototype = {};
 
@@ -31,7 +37,9 @@ Vimp.prototype.step = function(step) {
 	} else {
 		// Is an option
 		var opts = step;
-		var step = this.getStep(opts);
+		var step = this.getStep(opts).slice();
+		step[1] = opts;
+
 		// TODO: where do we record current step?
 		this.exec.apply(this,step);
 	}
@@ -52,16 +60,27 @@ Vimp.prototype.addStep = function(commands,opts) {
  *
  */
 Vimp.prototype.getStep = function(options) {
+	if(this.index < 0) this.index = 0;
+	if(this.steps.length <= this.index) {
+		this.index--;
+	}
 	return this.steps[this.index];
 };
 
 Vimp.prototype.exec = function(commands, opts) {
 	opts = opts || {};
 	if(opts.backwards) {
-		var snapshot = this.snapshots(this.index);
+		this.index--
+		var snapshot = this.snapshots['' + this.index];
+		this.vim.exec('esc');
+		this.vim.mode(snapshot.mode);
+		this.vim.curDoc.text(snapshot.text);
+		this.vim.curDoc.cursor.position(snapshot.cursor);
+		this.vim.curDoc.selection(snapshot.selection);
 		this.vim.text(snapshot);
 	} else {
 		// Base case
+		this.snapshots['' + this.index] = this.vim.toJSON();
 		this.vim.exec(commands);
 		this.index++;
 	}
